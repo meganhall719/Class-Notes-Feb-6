@@ -1,0 +1,120 @@
+---
+title: "In_Class_Notes_Feb6"
+format: html
+editor: visual
+---
+
+## Notes
+
+### Coding Challenge
+
+In one line of coode, add a new variable to the data frame called "comedy" that is TRUE if on eof the genres listed is Comedy and False is non of the genres is listed as comety R is case sensitive hint: look at functions in the {stringr} package and or the function grepl() in one line of code ouput the tootal number of movies and total number oof comedy genre movies summarize()
+
+```{r}
+library(tidyverse)
+library(stringr)
+d <- read.csv("https://raw.githubusercontent.com/difiore/ada-datasets/refs/heads/main/IMDB-movies.csv")
+d <- d |>
+  mutate(comedy = if_else(grepl("Comedy", genres),TRUE, FALSE))
+view(d)
+summarize(d)
+```
+
+in one line of code, put the total number of movies and total number of "Comedy" genre movies
+
+```{r}
+s <- d |> summarize(count = n(),
+                    comedycount = sum(comedy))
+s
+```
+
+In one line of code, add a new variable for “ranking” where ranking = “low” if averageRating = 0 to 3.3, “med” if averageRating \> 3.3 to 6.7, and high if averageRanking \> 6.7 to 10
+
+```{r}
+d <- d |>
+  mutate( rating = case_when (
+    averageRating > 0 & averageRating <=3.3 ~ "low",
+    averageRating > 3.3 & averageRating <= 6.7 ~ "med",
+    averageRating > 6.7 & averageRating <10 ~ "high"
+  ))
+d
+```
+
+In one line of code, output the total number of movies in each category and their average runtime
+
+```{r}
+d <- d |>
+  group_by(genres) |>
+  summarize(count = n(),
+            mean_runtime = mean(runtimeMinutes, na.rm = TRUE))
+```
+
+# Looping
+
+```{r}
+for (i in as.numeric(c("1", "4", "9", "16", "25"))){
+  print (i)
+  j <- sqrt(i)
+  print(j)
+}
+```
+
+```{r}
+for (i in 1:10){
+  for(j in c('a', 'b', 'c')){
+    print(i)
+    print(j)
+  }
+}
+```
+
+## Challenge
+
+Write code to loop through all the rows in the dataset and print out the cumulative running time of all of the movies
+
+```{r}
+cumRT <- 0
+for (i in d$runtimeMinutes){
+  print(i)
+  if(!is.na(i)){
+    cumRT <- cumRT + i
+  }
+}
+cumRT
+```
+
+# Joins
+
+## Inner Joins
+Takes what is similar between two talbes and combines that data and leaves out whatever doesnt match between those two tables
+
+## Outer Joins
+
+3 kinds ; potentially making the tables longer takes various kinds of untions t
+
+### Left Join
+takes everyrow from the table on left hand side and matches table on right
+### Right Join
+
+### Full Join
+
+```{r}
+P<-read.csv ("https://raw.githubusercontent.com/difiore/ada-datasets/refs/heads/main/papers.csv")
+C<-read.csv("https://raw.githubusercontent.com/difiore/ada-datasets/refs/heads/main/creators.csv")
+P <- P |>
+  separate_wider_delim(cols = Author,
+                       delim = ";",
+                       names = c("First Author", "A2", "A3", "A4"),
+                       too_few = "align_start", too_many = "drop") |>
+  mutate(A2 = str_trim(`A2`, "both"),
+         A3 = str_trim(`A3`, "both"),
+         A4 = str_trim(`A4`, "both"))
+P
+```
+
+```{r}
+C<- C |>
+  distinct()
+head (C)
+```
+
